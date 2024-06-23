@@ -1,3 +1,5 @@
+from collections import deque
+
 """Defining a class including process id, arrival time, burst time, and memory requirements."""
 
 class Process:
@@ -5,7 +7,9 @@ class Process:
         self.process_id = process_id
         self.arrival_time = arrival_time
         self.burst_time = burst_time
+        self.remaining_time = burst_time
         self.memory_requirements = memory_requirements
+        self.completion_time = 0
 
  
     def __str__(self):
@@ -17,9 +21,9 @@ process1 = Process(process_id=1, arrival_time=0, burst_time = 5, memory_requirem
 process2 = Process(process_id=2, arrival_time=2, burst_time = 2, memory_requirements = 400)
 process3 = Process(process_id=3, arrival_time=4, burst_time = 6, memory_requirements = 400)
 process4 = Process(process_id=4, arrival_time=3, burst_time = 4, memory_requirements = 300)
-process5 = Process(process_id=5, arrival_time=8, burst_time = 35, memory_requirements = 300)
+process5 = Process(process_id=5, arrival_time=8, burst_time = 8, memory_requirements = 300)
 process6 = Process(process_id=6, arrival_time=9, burst_time = 1, memory_requirements = 400)
-process7 = Process(process_id=7, arrival_time=12, burst_time = 13, memory_requirements = 500)
+process7 = Process(process_id=7, arrival_time=12, burst_time = 7, memory_requirements = 500)
 
 job_queue = []
 
@@ -36,6 +40,7 @@ job_queue.append(process7)
 
 
 """Implementing a function to add porcesses into the ready queue based on their arrival time."""
+
 
 def readyQueue (job_queue):
      ready_queue = []
@@ -62,7 +67,7 @@ def excuting_process_fcfs(ready_queue):
 
 """excuting_process_fcfs(ready_queue)"""
 
-
+"""Sorting the processes in the ready queue based on their burst time."""
 def readyQueue_sjf(ready_queue):
      ready_queue_sjf = []
      for process in ready_queue:
@@ -73,8 +78,9 @@ def readyQueue_sjf(ready_queue):
 
 ready_queue_sjf = readyQueue_sjf(ready_queue)
 
+"""Implementing the shortest job first algorithm."""
 def executing_process_sjf(ready_queue_sjf):
-     print("Excuting process in shortest job first algorithm")
+     print("Excuting processes in the shortest job first algorithm")
      for process in ready_queue_sjf:
           print(f"\nExecuting Process ID: {process.process_id}")
           print(f"Arrival Time: {process.arrival_time}")
@@ -83,4 +89,40 @@ def executing_process_sjf(ready_queue_sjf):
           print(f"Process {process.process_id} executed for {process.burst_time} units of time")
           print(f"Process {process.process_id} has been successfully executed!")
 
-executing_process_sjf(ready_queue_sjf)
+"""executing_process_sjf(ready_queue_sjf)"""
+
+def round_robin(ready_queue, quantam):
+     time = 0
+     queue = deque(ready_queue)
+     completed_process = []
+
+     while queue:
+          process = queue.popleft()
+
+          if process.arrival_time <= time:
+               if process.remaining_time > quantam:
+                    time += quantam
+                    process.remaining_time -= quantam
+                    queue.append(process)
+               else:
+                    time += process.remaining_time
+                    process.remaining_time = 0
+                    process.completion_time = time
+                    completed_process.append(process)
+               print(f"Time: {time}, Process: {process.process_id}, Remaining Time: {process.remaining_time}")
+          else:
+
+               queue.append(process)
+               if queue and queue[0].arrival_time > time:
+                    time = queue[0].arrival_time
+
+     
+     return completed_process
+
+quantum = 2
+completed_process = round_robin(ready_queue, quantum)
+
+
+print("\nCompletion times:")
+for process in completed_process:
+    print(f"Process {process.process_id} completed at time {process.completion_time}")
