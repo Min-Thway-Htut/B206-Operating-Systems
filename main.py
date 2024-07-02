@@ -128,6 +128,7 @@ def main():
 
     print("\nProcess Scheduling Results:")
     for process in input_processes:
+
         print(f"Process {process.process_id}: Start Time: {process.start_time}, End Time: {process.end_time}, "
               f"Waiting Time: {process.waiting_time}, Turnaround Time: {process.turnaround_time}")
 
